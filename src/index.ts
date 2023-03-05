@@ -1,12 +1,17 @@
 import fs = require('fs');
 import readLine = require('readline');
+import Scanner from './lexer';
 
 if (process.argv.length > 3) {
   console.log('Usage:', process.argv[1], '<filename>');
 } else if (process.argv.length === 3) {
-  runFile(process.argv[2]).catch(err => console.error(err));
+  runFile(process.argv[2])
+    .then(() => console.log('File run successfully'))
+    .catch(err => console.error(err));
 } else {
-  runPrompt().catch(err => console.error(err));
+  runPrompt()
+    .then(() => console.log('execution done'))
+    .catch(err => console.error(err));
 }
 
 function runFile(fileName: string) {
@@ -18,9 +23,8 @@ function runFile(fileName: string) {
       reject((error as Error).message);
     }
 
-    const source: string = (buffer as Buffer).toString();
-    run(source).catch(err => reject(err));
-    resolve();
+    const source: string = (buffer as Buffer).toString().trim();
+    run(source).then(resolve).catch(reject);
   });
 }
 
@@ -38,20 +42,31 @@ function runPrompt() {
           rl.question('> ', resolve)
         );
 
-        run(line).catch(err => reject(err));
-      }
-    })();
+        if (line === '') break;
 
-    resolve();
+        try {
+          await run(line);
+        } catch (error) {
+          // ignore error and continue REPL
+        }
+      }
+
+      resolve();
+      rl.close();
+    })();
   });
 }
 
 function run(source: string) {
   return new Promise<void>((resolve, reject) => {
-    const tokens: string[] = source.split(/\s+/);
-    tokens.forEach(token => {
-      console.log(token);
-    });
-    resolve();
+    const scanner = new Scanner(source);
+
+    scanner
+      .scanTokens()
+      .then(tokens => {
+        console.log(tokens);
+        resolve();
+      })
+      .catch(reject);
   });
 }
