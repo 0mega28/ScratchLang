@@ -21,6 +21,7 @@ function runFile(fileName: string) {
       buffer = fs.readFileSync(fileName);
     } catch (error: unknown) {
       reject((error as Error).message);
+      return;
     }
 
     const source: string = (buffer as Buffer).toString().trim();
@@ -47,6 +48,7 @@ function runPrompt() {
         try {
           await run(line);
         } catch (error) {
+          console.error(error);
           // ignore error and continue REPL
         }
       }
