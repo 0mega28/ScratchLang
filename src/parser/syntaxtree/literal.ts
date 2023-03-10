@@ -1,7 +1,7 @@
 import Expr from './expr';
 import Visitor from '../visitorpattern';
 
-type literalType = string | number | null;
+type literalType = string | number | boolean | null;
 
 class Literal extends Expr {
   value: literalType;
@@ -16,3 +16,4 @@ class Literal extends Expr {
 }
 
 export default Literal;
+export {literalType};
