@@ -1,6 +1,8 @@
 import fs = require('fs');
 import readLine = require('readline');
 import Scanner from './lexer';
+import Parser from './parser';
+import AstPrinter from './parser/astprinter';
 
 if (process.argv.length > 3) {
   console.log('Usage:', process.argv[1], '<filename>');
@@ -61,14 +63,12 @@ function runPrompt() {
 
 function run(source: string) {
   return new Promise<void>((resolve, reject) => {
-    const scanner = new Scanner(source);
-
-    scanner
-      .scanTokens()
-      .then(tokens => {
-        console.log(tokens);
-        resolve();
-      })
+    Promise.resolve()
+      .then(() => new Scanner(source).scanTokens())
+      .then(tokens => new Parser(tokens).parse())
+      .then(expr => new AstPrinter().print(expr))
+      .then(console.log)
+      .then(resolve)
       .catch(reject);
   });
 }
