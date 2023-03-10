@@ -130,8 +130,7 @@ class Scanner {
       case '"':
         while (this.peek() !== '"') {
           if (this.isAtEnd()) {
-            error(this.line, 'Cannot find end of string');
-            this.hasError = true;
+            this.error(this.line, 'Cannot find end of string');
             return;
           }
           if (this.peek() === '\n') {
@@ -153,8 +152,7 @@ class Scanner {
         } else if (isAlpha(char)) {
           this.handleAlpha();
         } else {
-          error(this.line, `Unexpected character: ${char}`);
-          this.hasError = true;
+          this.error(this.line, `Unexpected character: ${char}`);
         }
         break;
     }
@@ -223,6 +221,11 @@ class Scanner {
 
   private isAtEnd(): boolean {
     return this.current >= this.source.length;
+  }
+
+  private error(line: number, message: string): void {
+    this.hasError = true;
+    error(line, message);
   }
 }
 
