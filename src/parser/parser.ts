@@ -167,6 +167,10 @@ class Parser {
   private isAtEnd(): boolean {
     return this.tokens[this.current].type === TokenType.EOF;
   }
+
+  private synchronize() {
+    throw new Error('Not implemented');
+  }
 }
 
 export default Parser;
