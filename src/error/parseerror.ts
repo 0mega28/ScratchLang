@@ -1,5 +1,5 @@
 import Token from '../common/token';
-import error from '../error';
+import error from '.';
 
 class ParseError extends Error {
   public static error(token: Token, message: string): ParseError {

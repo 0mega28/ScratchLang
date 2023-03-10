@@ -1,6 +1,6 @@
 import Token from '../common/token';
 import TokenType from '../common/tokenType';
-import ParseError from './parseerror';
+import ParseError from '../error/parseerror';
 import Binary from '../syntaxtree/binary';
 import Expr from '../syntaxtree/expr';
 import Grouping from '../syntaxtree/grouping';
