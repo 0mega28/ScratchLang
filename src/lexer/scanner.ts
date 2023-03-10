@@ -1,7 +1,7 @@
 import error from '../error';
 import {isAlpha, isAplhaNumeric, isDigit} from '../utils';
-import Token, {literal} from './token';
-import TokenType from './tokenType';
+import Token, {literal} from '../common/token';
+import TokenType from '../common/tokenType';
 
 class Scanner {
   private source: string;

@@ -1,4 +1,4 @@
-import Token from '../../lexer/token';
+import Token from '../../common/token';
 import Expr from './expr';
 import Visitor from '../visitorpattern';
 
