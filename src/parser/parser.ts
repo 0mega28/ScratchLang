@@ -135,7 +135,7 @@ class Parser {
       return new Grouping(expr);
     }
 
-    throw new Error('Unexpected token');
+    throw ParseError.error(this.peek(), 'Unexpected token');
   }
 
   consume(tokenType: TokenType, message: string) {
