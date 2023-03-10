@@ -7,9 +7,9 @@ class Scanner {
   private source: string;
   private static tokens: Token[] = [];
   private start!: number;
-  private current!: number;
-  private line!: number;
-  private hasError?: boolean;
+  private current: number;
+  private line: number;
+  private hasError: boolean;
   private static keywords: Map<string, TokenType> = new Map<
     string,
     TokenType
