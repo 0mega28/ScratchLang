@@ -32,12 +32,12 @@ class Parser {
     this.current = 0;
   }
 
-  public parse(): Expr | null {
+  public parse() {
     try {
-      return this.expression();
+      return Promise.resolve(this.expression());
     } catch (error) {
       if (error instanceof ParseError) {
-        return null;
+        return Promise.reject(error);
       } else {
         throw error;
       }
