@@ -1,5 +1,6 @@
 import fs = require('fs');
 import readLine = require('readline');
+import Interpreter from './interpreter/interpreter';
 import Scanner from './lexer';
 import Parser from './parser';
 import AstPrinter from './utils/astprinter';
@@ -50,7 +51,6 @@ function runPrompt() {
         try {
           await run(line);
         } catch (error) {
-          console.error(error);
           // ignore error and continue REPL
         }
       }
@@ -66,7 +66,8 @@ function run(source: string) {
     Promise.resolve()
       .then(() => new Scanner(source).scanTokens())
       .then(tokens => new Parser(tokens).parse())
-      .then(expr => new AstPrinter().print(expr))
+      // .then(expr => new AstPrinter().print(expr))
+      .then(expr => new Interpreter().interpret(expr))
       .then(console.log)
       .then(resolve)
       .catch(reject);
