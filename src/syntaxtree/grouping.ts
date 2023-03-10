@@ -1,5 +1,5 @@
 import Expr from './expr';
-import Visitor from '../visitorpattern';
+import Visitor from './visitorpattern';
 
 class Grouping extends Expr {
   expression: Expr;

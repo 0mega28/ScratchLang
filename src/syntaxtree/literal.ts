@@ -1,5 +1,5 @@
 import Expr from './expr';
-import Visitor from '../visitorpattern';
+import Visitor from './visitorpattern';
 
 type literalType = string | number | boolean | null;
 

@@ -2,7 +2,7 @@ import fs = require('fs');
 import readLine = require('readline');
 import Scanner from './lexer';
 import Parser from './parser';
-import AstPrinter from './parser/astprinter';
+import AstPrinter from './utils/astprinter';
 
 if (process.argv.length > 3) {
   console.log('Usage:', process.argv[1], '<filename>');

@@ -1,9 +1,9 @@
-import Binary from './syntaxtree/binary';
-import Expr from './syntaxtree/expr';
-import Grouping from './syntaxtree/grouping';
-import Literal from './syntaxtree/literal';
-import Unary from './syntaxtree/unary';
-import Visitor from './visitorpattern';
+import Binary from '../syntaxtree/binary';
+import Expr from '../syntaxtree/expr';
+import Grouping from '../syntaxtree/grouping';
+import Literal from '../syntaxtree/literal';
+import Unary from '../syntaxtree/unary';
+import Visitor from '../syntaxtree/visitorpattern';
 
 class AstPrinter implements Visitor<string> {
   print(expr: Expr): string {

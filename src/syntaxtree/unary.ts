@@ -1,6 +1,6 @@
-import Token from '../../common/token';
+import Token from '../common/token';
 import Expr from './expr';
-import Visitor from '../visitorpattern';
+import Visitor from './visitorpattern';
 
 class Unary extends Expr {
   operator: Token;
