@@ -1,11 +1,13 @@
-import Binary from '../syntaxtree/binary';
-import Expr from '../syntaxtree/expr';
-import Grouping from '../syntaxtree/grouping';
-import Literal from '../syntaxtree/literal';
-import Unary from '../syntaxtree/unary';
-import Visitor from '../syntaxtree/visitorpattern';
+import {
+  Expr,
+  Literal,
+  Binary,
+  Unary,
+  Grouping,
+  ExprVisitor,
+} from '../syntaxtree/expr';
 
-class AstPrinter implements Visitor<string> {
+class AstPrinter implements ExprVisitor<string> {
   print(expr: Expr): string {
     return expr.accept(this);
   }

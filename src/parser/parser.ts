@@ -1,11 +1,14 @@
 import Token from '../common/token';
 import TokenType from '../common/tokenType';
 import ParseError from '../error/parseerror';
-import Binary from '../syntaxtree/binary';
-import Expr from '../syntaxtree/expr';
-import Grouping from '../syntaxtree/grouping';
-import Literal, {literalType} from '../syntaxtree/literal';
-import Unary from '../syntaxtree/unary';
+import {
+  literalType,
+  Expr,
+  Binary,
+  Unary,
+  Literal,
+  Grouping,
+} from '../syntaxtree/expr';
 
 /**
  * expression     → equality ;

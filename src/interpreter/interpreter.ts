@@ -2,15 +2,17 @@ import Token from '../common/token';
 import TokenType from '../common/tokenType';
 import {error} from '../error/error';
 import RuntimeError from '../error/runtimeerror';
-import Binary from '../syntaxtree/binary';
-import Expr from '../syntaxtree/expr';
-import Grouping from '../syntaxtree/grouping';
-import Literal from '../syntaxtree/literal';
-import Unary from '../syntaxtree/unary';
-import Visitor from '../syntaxtree/visitorpattern';
+import {
+  Expr,
+  Literal,
+  Binary,
+  Unary,
+  Grouping,
+  ExprVisitor,
+} from '../syntaxtree/expr';
 import {checkNumberOperand, checkNumberOperands} from './checkoperands';
 
-class Interpreter implements Visitor<any> {
+class Interpreter implements ExprVisitor<any> {
   interpret(expr: Expr): Promise<any> {
     try {
       const value: any = this.evaluate(expr);
