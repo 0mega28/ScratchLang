@@ -36,12 +36,15 @@ class Interpreter implements Visitor<any> {
       case TokenType.PLUS:
         if (typeof left === 'number' && typeof right === 'number')
           return left + right;
-        if (typeof left === 'string' && typeof right === 'string')
-          return left + right;
-
+        if (
+          (typeof left === 'string' && typeof right === 'number') ||
+          (typeof left === 'number' && typeof right === 'string') ||
+          (typeof left === 'string' && typeof right === 'string')
+        )
+          return `${left}${right}`;
         throw new RuntimeError(
           expr.operator,
-          'Operands must be number of string'
+          'Operands must be number or string'
         );
 
       case TokenType.MINUS:
