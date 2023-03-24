@@ -9,6 +9,7 @@ import {
   Literal,
   Grouping,
 } from '../syntaxtree/expr';
+import {Expression, Print, Stmt} from '../syntaxtree/stmt';
 
 /**
  * expression     → equality ;
@@ -35,9 +36,13 @@ class Parser {
     this.current = 0;
   }
 
-  public parse() {
+  public parse(): Promise<Stmt[]> {
     try {
-      return Promise.resolve(this.expression());
+      const statements: Stmt[] = [];
+      while (!this.isAtEnd()) {
+        statements.push(this.statement());
+      }
+      return Promise.resolve(statements);
     } catch (error) {
       if (error instanceof ParseError) {
         return Promise.reject(error);
@@ -45,6 +50,25 @@ class Parser {
         throw error;
       }
     }
+  }
+  statement(): Stmt {
+    if (this.match(TokenType.PRINT)) return this.printStatement();
+
+    return this.expressionStatement();
+  }
+
+  expressionStatement(): Stmt {
+    const expr: Expr = this.expression();
+    this.consume(TokenType.SEMICOLON, "Expect ';' after expression.");
+
+    return new Expression(expr);
+  }
+
+  printStatement(): Stmt {
+    const value: Expr = this.expression();
+    this.consume(TokenType.SEMICOLON, "Expect ';' after value.");
+
+    return new Print(value);
   }
 
   private expression(): Expr {
