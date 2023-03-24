@@ -66,9 +66,7 @@ function run(source: string) {
     Promise.resolve()
       .then(() => new Scanner(source).scanTokens())
       .then(tokens => new Parser(tokens).parse())
-      // .then(expr => new AstPrinter().print(expr))
       .then(expr => new Interpreter().interpret(expr))
-      .then(console.log)
       .then(resolve)
       .catch(reject);
   });
