@@ -10,13 +10,16 @@ import {
   Grouping,
   ExprVisitor,
 } from '../syntaxtree/expr';
+import {Expression, Print, Stmt, StmtVisitor} from '../syntaxtree/stmt';
 import {checkNumberOperand, checkNumberOperands} from './checkoperands';
 
-class Interpreter implements ExprVisitor<any> {
-  interpret(expr: Expr): Promise<any> {
+class Interpreter implements ExprVisitor<any>, StmtVisitor<void> {
+  interpret(statements: Stmt[]): Promise<void> {
     try {
-      const value: any = this.evaluate(expr);
-      return Promise.resolve(value);
+      for (const statement of statements) {
+        this.execute(statement);
+      }
+      return Promise.resolve();
     } catch (e) {
       if (e instanceof RuntimeError) {
         const runtimeError = e as RuntimeError;
@@ -105,8 +108,20 @@ class Interpreter implements ExprVisitor<any> {
     return this.evaluate(expr.expression);
   }
 
+  visitExpressionStmt(stmt: Expression): void {
+    this.evaluate(stmt.expression);
+  }
+  visitPrintStmt(stmt: Print): void {
+    const value: any = this.evaluate(stmt.expression);
+    console.log(value);
+  }
+
   evaluate(expr: Expr): any {
     return expr.accept(this);
+  }
+
+  execute(statement: Stmt) {
+    statement.accept(this);
   }
 
   isTruthy(object: any) {
@@ -121,6 +136,3 @@ class Interpreter implements ExprVisitor<any> {
 }
 
 export default Interpreter;
-function checkStringOperands(operator: Token, left: any, right: any) {
-  throw new Error('Function not implemented.');
-}
