@@ -1,3 +1,4 @@
+import Token from '../common/token';
 import {Expr} from './expr';
 
 abstract class Stmt {
@@ -7,6 +8,7 @@ abstract class Stmt {
 interface StmtVisitor<R> {
   visitExpressionStmt(stmt: Expression): R;
   visitPrintStmt(stmt: Print): R;
+  visitVarStmt(stmt: Var): R;
 }
 
 class Expression extends Stmt {
@@ -33,4 +35,19 @@ class Print extends Stmt {
   }
 }
 
-export {Stmt, Expression, Print, StmtVisitor};
+class Var extends Stmt {
+  name: Token;
+  initializer: Expr;
+
+  constructor(name: Token, initializer: Expr) {
+    super();
+    this.name = name;
+    this.initializer = initializer;
+  }
+
+  accept<R>(visitor: StmtVisitor<R>): R {
+    return visitor.visitVarStmt(this);
+  }
+}
+
+export {Stmt, Expression, Print, StmtVisitor, Var};

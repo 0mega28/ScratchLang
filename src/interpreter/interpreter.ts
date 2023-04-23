@@ -9,11 +9,15 @@ import {
   Unary,
   Grouping,
   ExprVisitor,
+  Variable,
+  Assignment,
 } from '../syntaxtree/expr';
-import {Expression, Print, Stmt, StmtVisitor} from '../syntaxtree/stmt';
+import {Expression, Print, Stmt, StmtVisitor, Var} from '../syntaxtree/stmt';
 import {checkNumberOperand, checkNumberOperands} from './checkoperands';
+import Environment from './environment';
 
 class Interpreter implements ExprVisitor<any>, StmtVisitor<void> {
+  environment: Environment = new Environment();
   interpret(statements: Stmt[]): Promise<void> {
     try {
       for (const statement of statements) {
@@ -114,6 +118,26 @@ class Interpreter implements ExprVisitor<any>, StmtVisitor<void> {
   visitPrintStmt(stmt: Print): void {
     const value: any = this.evaluate(stmt.expression);
     console.log(value);
+  }
+
+  visitVariableExpression(expr: Variable) {
+    return this.environment.get(expr.name);
+  }
+
+  visitAssignmentExpression(expr: Assignment): any {
+    const value: any = this.evaluate(expr.value);
+    this.environment.assign(expr.name, value);
+    return value;
+  }
+
+  visitVarStmt(stmt: Var): void {
+    let value: any = null;
+    if (stmt.initializer !== null) {
+      value = this.evaluate(stmt.initializer);
+    }
+
+    this.environment.define(stmt.name.lexeme, value);
+    return null;
   }
 
   evaluate(expr: Expr): any {

@@ -5,7 +5,7 @@ import {error} from '../error/error';
 
 class Scanner {
   private source: string;
-  private static tokens: Token[] = [];
+  private tokens: Token[] = [];
   private start!: number;
   private current: number;
   private line: number;
@@ -48,9 +48,9 @@ class Scanner {
         this.scanToken();
       }
 
-      Scanner.tokens.push(new Token(TokenType.EOF, '', null, this.line));
+      this.tokens.push(new Token(TokenType.EOF, '', null, this.line));
 
-      this.hasError ? reject('Scanning failed') : resolve(Scanner.tokens);
+      this.hasError ? reject('Scanning failed') : resolve(this.tokens);
     });
   }
 
@@ -216,7 +216,7 @@ class Scanner {
 
   private addToken(type: TokenType, literal: literal = null) {
     const lexeme = this.source.substring(this.start, this.current);
-    Scanner.tokens.push(new Token(type, lexeme, literal, this.line));
+    this.tokens.push(new Token(type, lexeme, literal, this.line));
   }
 
   private isAtEnd(): boolean {

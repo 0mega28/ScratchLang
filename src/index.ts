@@ -5,6 +5,7 @@ import Scanner from './lexer';
 import Parser from './parser';
 import AstPrinter from './utils/astprinter';
 
+const interpreter: Interpreter = new Interpreter();
 if (process.argv.length > 3) {
   console.log('Usage:', process.argv[1], '<filename>');
 } else if (process.argv.length === 3) {
@@ -51,7 +52,7 @@ function runPrompt() {
         try {
           await run(line);
         } catch (error) {
-          // ignore error and continue REPL
+          console.error(error);
         }
       }
 
@@ -66,7 +67,7 @@ function run(source: string) {
     Promise.resolve()
       .then(() => new Scanner(source).scanTokens())
       .then(tokens => new Parser(tokens).parse())
-      .then(expr => new Interpreter().interpret(expr))
+      .then(expr => interpreter.interpret(expr))
       .then(resolve)
       .catch(reject);
   });

@@ -5,11 +5,13 @@ import {
   Unary,
   Grouping,
   ExprVisitor,
+  Variable,
+  Assignment,
 } from '../syntaxtree/expr';
 
 class AstPrinter implements ExprVisitor<string> {
-  print(expr: Expr): string {
-    return expr.accept(this);
+  print(expr: Expr): Promise<string> {
+    return Promise.resolve(expr.accept(this));
   }
 
   visitLiteralExpr(expr: Literal): string {
@@ -24,6 +26,12 @@ class AstPrinter implements ExprVisitor<string> {
   }
   visitGroupingExpr(expr: Grouping): string {
     return this.parenthesize('group', expr.expression);
+  }
+  visitVariableExpression(expr: Variable): string {
+    return this.parenthesize(`variable ${expr.name}`);
+  }
+  visitAssignmentExpression(expr: Assignment): string {
+    return this.parenthesize(`assignment ${expr.name}`, expr.value);
   }
 
   private parenthesize(name: string, ...exprs: Expr[]): string {

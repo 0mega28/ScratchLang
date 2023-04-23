@@ -1,5 +1,6 @@
 import Token from '../common/token';
 import TokenType from '../common/tokenType';
+import {error} from '../error/error';
 import ParseError from '../error/parseerror';
 import {
   literalType,
@@ -8,8 +9,10 @@ import {
   Unary,
   Literal,
   Grouping,
+  Variable,
+  Assignment,
 } from '../syntaxtree/expr';
-import {Expression, Print, Stmt} from '../syntaxtree/stmt';
+import {Expression, Print, Stmt, Var} from '../syntaxtree/stmt';
 
 class Parser {
   private tokens: Token[];
@@ -28,20 +31,41 @@ class Parser {
   }
 
   public parse(): Promise<Stmt[]> {
+    const statements: Stmt[] = [];
+    while (!this.isAtEnd()) {
+      statements.push(this.declaration());
+    }
+    return Promise.resolve(statements);
+  }
+  declaration(): Stmt {
     try {
-      const statements: Stmt[] = [];
-      while (!this.isAtEnd()) {
-        statements.push(this.statement());
-      }
-      return Promise.resolve(statements);
+      if (this.match(TokenType.VAR)) return this.varDeclaration();
+
+      return this.statement();
     } catch (error) {
       if (error instanceof ParseError) {
-        return Promise.reject(error);
-      } else {
-        throw error;
+        this.synchronize();
+        return null;
       }
+      throw error;
     }
   }
+  varDeclaration(): Stmt {
+    const name: Token = this.consume(
+      TokenType.IDENTIFIER,
+      'Expect variable name'
+    );
+
+    let inistializer: Expr = null;
+    if (this.match(TokenType.EQUAL)) {
+      inistializer = this.expression();
+    }
+
+    this.consume(TokenType.SEMICOLON, "Expect ';' after variable declaration");
+
+    return new Var(name, inistializer);
+  }
+
   statement(): Stmt {
     if (this.match(TokenType.PRINT)) return this.printStatement();
 
@@ -63,7 +87,25 @@ class Parser {
   }
 
   private expression(): Expr {
-    return this.equality();
+    return this.assignment();
+  }
+
+  private assignment(): Expr {
+    const expr: Expr = this.equality();
+
+    if (this.match(TokenType.EQUAL)) {
+      const equals: Token = this.previous();
+      const value: Expr = this.assignment();
+
+      if (expr instanceof Variable) {
+        const name: Token = expr.name;
+        return new Assignment(name, value);
+      }
+
+      error(equals.line, 'Invalid assignment expression');
+    }
+
+    return expr;
   }
 
   private equality(): Expr {
@@ -147,6 +189,8 @@ class Parser {
       return new Literal(
         Parser.literalMap.get(this.previous().type) as literalType
       );
+    } else if (this.match(TokenType.IDENTIFIER)) {
+      return new Variable(this.previous());
     } else if (this.match(TokenType.LEFT_PARAM)) {
       const expr: Expr = this.expression();
       this.consume(TokenType.RIGHT_PARAM, "Expect ')' after expression");
@@ -156,10 +200,10 @@ class Parser {
     throw ParseError.error(this.peek(), 'Unexpected token');
   }
 
-  consume(tokenType: TokenType, message: string) {
-    if (this.match(tokenType)) return;
+  consume(tokenType: TokenType, message: string): Token {
+    if (this.match(tokenType)) return this.previous();
 
-    return ParseError.error(this.peek(), message);
+    throw ParseError.error(this.peek(), message);
   }
 
   peek(): Token {
@@ -186,8 +230,27 @@ class Parser {
     return this.tokens[this.current].type === TokenType.EOF;
   }
 
-  private synchronize() {
-    throw new Error('Not implemented');
+  private synchronize(): void {
+    this.current++;
+
+    while (!this.isAtEnd()) {
+      if (this.previous().type === TokenType.SEMICOLON) return;
+
+      const type = this.peek().type;
+      const syncTypes = [
+        TokenType.CLASS,
+        TokenType.FUN,
+        TokenType.VAR,
+        TokenType.FOR,
+        TokenType.IF,
+        TokenType.WHILE,
+        TokenType.PRINT,
+        TokenType.RETURN,
+      ];
+
+      if (syncTypes.includes(type)) return;
+      this.current++;
+    }
   }
 }
 

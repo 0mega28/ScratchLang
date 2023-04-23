@@ -9,6 +9,8 @@ interface ExprVisitor<R> {
   visitBinaryExpr(expr: Binary): R;
   visitUnaryExpr(expr: Unary): R;
   visitGroupingExpr(expr: Grouping): R;
+  visitVariableExpression(expr: Variable): R;
+  visitAssignmentExpression(expr: Assignment): R;
 }
 
 class Unary extends Expr {
@@ -66,4 +68,42 @@ class Binary extends Expr {
   }
 }
 
-export {Expr, Unary, Binary, Grouping, Literal, literalType, ExprVisitor};
+class Variable extends Expr {
+  name: Token;
+
+  constructor(name: Token) {
+    super();
+    this.name = name;
+  }
+
+  accept<R>(ExprVisitor: ExprVisitor<R>): R {
+    return ExprVisitor.visitVariableExpression(this);
+  }
+}
+
+class Assignment extends Expr {
+  name: Token;
+  value: Expr;
+
+  constructor(name: Token, value: Expr) {
+    super();
+    this.name = name;
+    this.value = value;
+  }
+
+  accept<R>(ExprVisitor: ExprVisitor<R>): R {
+    throw ExprVisitor.visitAssignmentExpression(this);
+  }
+}
+
+export {
+  Expr,
+  Unary,
+  Binary,
+  Grouping,
+  Literal,
+  literalType,
+  ExprVisitor,
+  Variable,
+  Assignment,
+};
