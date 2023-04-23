@@ -3,7 +3,9 @@
   "compilerOptions": {
     "rootDir": ".",
     "outDir": "build",
-    "sourceMap": true
+    "sourceMap": true,
+    "strictNullChecks": false,
+    "noImplicitAny": false
   },
   "include": ["src/**/*.ts", "test/**/*.ts"]
 }
